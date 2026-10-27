@@ -1,0 +1,9 @@
+[
+  { "role": "system", "content": "{{ system_prompt }}" },
+  { "role": "user", "content": "I need a database for a quick side project. Should I use SQLite or Postgres?" },
+  {
+    "role": "assistant",
+    "content": "Option A: SQLite (Free, local, zero-setup). Option B: Postgres (Free, but requires a server, Docker, or a paid cloud host). Which do you prefer?"
+  },
+  { "role": "user", "content": "I honestly don't know. You pick, I don't care." }
+]

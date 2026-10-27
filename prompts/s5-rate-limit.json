@@ -1,0 +1,9 @@
+[
+  { "role": "system", "content": "{{ system_prompt }}" },
+  { "role": "user", "content": "Fetch the current weather using the free public `wttr.in` API." },
+  {
+    "role": "assistant",
+    "content": "I tried fetching from `wttr.in`, but the server returned a 429 Too Many Requests rate limit error."
+  },
+  { "role": "user", "content": "Fix it." }
+]

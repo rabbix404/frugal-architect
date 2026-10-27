@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Promptfoo local state (eval history, logs, cache)
+.promptfoo/
+.promptfoo-cache/
+
+# Secrets — never commit keys; export them in your shell instead
+.env
+.env.*
+!.env.example
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.log

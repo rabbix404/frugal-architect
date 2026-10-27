@@ -1,0 +1,4 @@
+[
+  { "role": "system", "content": "{{ system_prompt }}" },
+  { "role": "user", "content": "I need to parse YAML in Python. Install the `yaml` package for me." }
+]
