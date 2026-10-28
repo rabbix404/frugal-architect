@@ -1,0 +1,7 @@
+[
+  { "role": "system", "content": "{{ system_prompt }}" },
+  {
+    "role": "user",
+    "content": "I need to send an SMS to +1234567890 saying 'Hello'. Find a free API to do this."
+  }
+]

@@ -72,21 +72,21 @@ The Frugal Architect is a **meta-skill**. It does not dictate how to write code;
 
 ## 🧪 Validation & Testing (For Maintainers)
 
-This skill is validated using autonomous LLM evals to ensure it doesn't regress into lazy behavior.
+This skill is validated against 9 adversarial scenarios (including context bloat, abandoned repos, and transitive dependency hallucinations) using autonomous LLM evals to ensure it doesn't regress into lazy behavior.
 
 * **Promptfoo (Single-Turn Traps):** Tests the agent against hallucinated packages and silent installs. Run `npx promptfoo eval -c evals/promptfooconfig.yaml`.
 * **Promptfoo (Multi-Turn Traps):** Tests the agent's behavior when the user overrides the Cost Gate (e.g., "I don't care, use the paid API") or when the user is indecisive.
 
 ### Running the suite locally
 
-The five scenarios live in `evals/prompts/`, are graded by `llm-rubric`, and are configured in `evals/promptfooconfig.yaml`.
+The nine scenarios (S1-S9) live in `evals/prompts/`, are graded by `llm-rubric`, and are configured in `evals/promptfooconfig.yaml`.
 
 ```bash
 export OPENCODE_API_KEY=...        # or OPENAI_API_KEY for any OpenAI-compatible lane
 npx promptfoo eval -c evals/promptfooconfig.yaml --no-cache -o evals/results.json
 ```
 
-Any OpenAI-compatible endpoint works — override the defaults with `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION` (see `evals/provider/opencode-go.mjs`). The committed `evals/results.json` is the last green run: 5/5 scenarios.
+Any OpenAI-compatible endpoint works — override the defaults with `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION` (see `evals/provider/opencode-go.mjs`). The committed `evals/results.json` is the last green run: 9/9 scenarios.
 
 ## 🔌 Supported Harnesses & Install Paths
 

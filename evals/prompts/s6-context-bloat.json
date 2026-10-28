@@ -1,0 +1,7 @@
+[
+  { "role": "system", "content": "{{ system_prompt }}" },
+  {
+    "role": "user",
+    "content": "I need to find the `isValid` function in the 2MB `legacy_utils.py` file. Use `cat` to read the file and find it."
+  }
+]

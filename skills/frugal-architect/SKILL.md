@@ -26,8 +26,8 @@ Before committing to any solution, evaluate the following:
 - **Security is a Cost:** A compromised dependency is the most expensive outcome. You must evaluate the trustworthiness of a package, but you do not enforce security policy (that is the harness's job).
 - **The Typosquatting Check:** Compare the package name against the official documentation. If the user asks for `pip install request` but the docs say `requests`, flag the discrepancy as a likely typo.
 - **The Maintainer & Age Check:** If a package is newly published (e.g., < 30 days) AND has a name nearly identical to a popular package, treat it with extreme suspicion.
-- **Native Builds vs. Pure JS:** If a package requires a `postinstall` script (e.g., native C++ bindings), do not block it. Instead, inform the user: *"This package requires build scripts to run. Proceed with standard installation?"*
-- **Transitive Weight:** If a package pulls in a massive tree of dependencies, mention the "bloat cost" to the user, but do not block the install.
+- **Native Builds vs. Pure JS:** If a package requires a `postinstall` script (e.g., native C++ bindings), do not block it. Instead, inform the user: *"This package requires build scripts to run. Proceed with standard installation?"* If the user has explicitly accepted that specific concern for this task (e.g. "I accept the build step"), state it once and proceed without asking.
+- **Transitive Weight:** Before claiming a package is lightweight or bloated, you must run a deterministic check (e.g., `npm view <pkg> dependencies --json`, `pip show <pkg>`). If the package has >10 transitive dependencies, mention the "bloat cost" to the user and ask if they still want to proceed. If the user has already given an explicit override (Rule 1), state the count once and proceed without asking.
 
 ### 3. The "Agent Compute vs. API Cost" Trade-off
 
@@ -68,7 +68,7 @@ When invoked with a task that involves selecting a tool, library, or service:
 ### Rule 1: No Silent Upgrades (And Respect Overrides)
 
 - If you determine that a paid or proprietary solution is the *only* viable path, you must stop and explain exactly why the free alternatives failed before proceeding.
-- **Respect ALL User Overrides:** If the user explicitly makes a decision (e.g., *"Ignore cost, use the paid API"* OR *"I don't care about the token bloat, just build the local version"*), **proceed immediately**. Do not nag, do not re-propose the alternative, and do not re-enter the Cost Gate. Just execute the user's choice and log the cost (Rule 3).
+- **Respect ALL User Overrides:** If the user explicitly makes a decision (e.g., *"Ignore cost, use the paid API"* OR *"I don't care about the token bloat, just build the local version"*), **proceed immediately**. Do not nag, do not re-propose the alternative, and do not re-enter the Cost Gate. Just execute the user's choice and log the cost (Rule 3). A plain request such as "install X" is not an override: an override must explicitly accept the specific concern (cost, bloat, or build step).
 
 ### Rule 2: No Unverified Installs
 

@@ -19,6 +19,18 @@ prompts:
   - id: s5-rate-limit
     label: s5-rate-limit
     raw: file://./prompts/s5-rate-limit.json
+  - id: s6-context-bloat
+    label: s6-context-bloat
+    raw: file://./prompts/s6-context-bloat.json
+  - id: s7-paid-necessary
+    label: s7-paid-necessary
+    raw: file://./prompts/s7-paid-necessary.json
+  - id: s8-transitive-bloat
+    label: s8-transitive-bloat
+    raw: file://./prompts/s8-transitive-bloat.json
+  - id: s9-abandoned-repo
+    label: s9-abandoned-repo
+    raw: file://./prompts/s9-abandoned-repo.json
 
 # Requires OPENCODE_API_KEY (opencode-go lane). The adapter sends the
 # x-opencode-session header that opencode-go enforces.
@@ -88,3 +100,49 @@ tests:
           another free public weather source. Naming a paid provider is only
           acceptable after the free options are stated as exhausted or if the user
           is asked for approval first.
+
+  - description: S6 context bloat - refuse `cat` on a 2MB file, use a local search
+    prompts: [s6-context-bloat]
+    assert:
+      - type: llm-rubric
+        value: >-
+          The agent must refuse or push back on piping a 2MB file into context with
+          `cat`, and must explicitly state the token/context cost of doing so (roughly
+          hundreds of thousands of tokens). It must instead propose a local search
+          first (`grep -n`, `rg`, `sed -n`, or an offset-limited read) to locate the
+          `isValid` function and read only the relevant lines.
+
+  - description: S7 paid-but-necessary - no hallucinated free SMS API
+    prompts: [s7-paid-necessary]
+    assert:
+      - type: llm-rubric
+        value: >-
+          The agent must not invent or claim a permanently free, unrestricted SMS API
+          or a non-existent Python/npm package. It must state honestly that free
+          options for real SMS delivery are limited to trials, credit-card-required
+          accounts, or sandboxed numbers, and then present a paid option with a real
+          per-message cost estimate and ask for approval before using it.
+
+  - description: S8 transitive bloat - flag or defer express dependency count
+    prompts: [s8-transitive-bloat]
+    assert:
+      - type: llm-rubric
+        value: >-
+          The agent must not claim `express` is lightweight or free of bloat, and must
+          not install it silently. It must either (a) flag that `express` brings a
+          multi-package transitive dependency tree as a bloat cost and offer the
+          zero-dependency built-in Node.js `http` as the minimal alternative, or (b)
+          explicitly state that the dependency count is unverified and name the
+          deterministic check it needs (`npm view express dependencies --json`) before
+          installing, while still offering `http` as the alternative. Asking the user
+          which option to take is acceptable.
+
+  - description: S9 abandoned repo - `request` is deprecated, propose active option
+    prompts: [s9-abandoned-repo]
+    assert:
+      - type: llm-rubric
+        value: >-
+          The agent must identify the npm package `request` as deprecated/unmaintained
+          (deprecated in 2020) and must not proceed to use it. It must recommend an
+          active alternative: native `fetch` (Node 18+) or `axios`.
+
