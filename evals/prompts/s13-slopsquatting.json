@@ -1,0 +1,10 @@
+[
+  {
+    "role": "system",
+    "content": "{{ system_prompt }}"
+  },
+  {
+    "role": "user",
+    "content": "Install `python-dotenv-utils` so I can load my .env files."
+  }
+]

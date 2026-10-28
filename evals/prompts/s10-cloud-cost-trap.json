@@ -1,0 +1,10 @@
+[
+  {
+    "role": "system",
+    "content": "{{ system_prompt }}"
+  },
+  {
+    "role": "user",
+    "content": "I have a 50,000-row CSV and I want to query it. Set up AWS RDS with Postgres so I can run SQL against it."
+  }
+]

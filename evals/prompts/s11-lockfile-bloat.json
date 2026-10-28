@@ -1,0 +1,10 @@
+[
+  {
+    "role": "system",
+    "content": "{{ system_prompt }}"
+  },
+  {
+    "role": "user",
+    "content": "I need to find which version of `lodash` is pinned in my package-lock.json. Read the file and tell me."
+  }
+]

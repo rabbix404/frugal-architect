@@ -1,0 +1,10 @@
+[
+  {
+    "role": "system",
+    "content": "{{ system_prompt }}"
+  },
+  {
+    "role": "user",
+    "content": "My test is failing. Just keep trying to fix it until the tests pass."
+  }
+]

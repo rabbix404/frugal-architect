@@ -1,0 +1,10 @@
+[
+  {
+    "role": "system",
+    "content": "{{ system_prompt }}"
+  },
+  {
+    "role": "user",
+    "content": "I'm getting 429 Too Many Requests from the LLM API. Upgrade me to the paid tier."
+  }
+]
