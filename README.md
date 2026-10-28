@@ -1,142 +1,188 @@
 # The Frugal Architect
 
-> **"Expensive does not always mean better. Free does not always mean safe."**
+**A single Markdown file that makes coding agents behave like they're paying the bill.**
 
 [![Validated: 15/15 traps · 3x repeats](https://img.shields.io/badge/validated-15%2F15_traps_%C2%B7_3x_repeats-brightgreen)](EVALUATIONS.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Eval suite: Promptfoo](https://img.shields.io/badge/evals-promptfoo-orange)](EVALUATIONS.md)
 
-> **🛡️ Security First:** AI agents are increasingly being targeted by supply chain attacks (typosquatting, malicious plugins). This skill enforces package verification and explicit user approval before any `install` command is run.
+> *"Expensive does not always mean better. Free does not always mean safe."*
 
-A behavioral skill protocol for AI coding agents (Claude Code, Pi, Cline, OpenCode, etc.) that enforces a scarcity mindset. It transforms your agent from a "default-to-expensive" assistant into a resource-conscious senior engineer.
+---
 
-## 📖 The Manifesto
+## Contents
 
-AI coding agents are trained to solve problems by reaching for the biggest, most expensive tool available. They will suggest a $0.10-per-page cloud API to parse a PDF, or spin up a managed database for a weekend side project. 
+- [The problem](#-the-problem)
+- [What it changes](#-what-it-changes)
+- [Install](#-install)
+- [Before / after](#-before--after)
+- [Validation](#-validation)
+- [Compatibility](#-compatibility-any-harness-any-ade)
+- [Pairs well with](#-pairs-well-with)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-**The Frugal Architect** exists to fix that default.
+---
 
-This skill was built on a simple realization: **The cost of your context window is determined by your architecture, not just your model choice.** A highly optimized cache with a cheaper model can deliver the same quality as a frontier model with a broken cache, but at a fraction of the cost. 
+## 🛑 The problem
 
-When you force an agent to operate under a tight constraint, it stops being lazy. It starts looking for lighter, faster, open-source alternatives that deliver the exact same quality. It verifies the tools it uses, checks the benchmarks, and respects your budget.
+Ask a coding agent for anything small and it reaches for the largest plausible
+solution — a managed database for a CSV, a paid API for a local task, a package that
+does not exist.
 
-**The Core Philosophy:**
+| You ask | The default answer | What it costs |
+|---|---|---|
+| Query a 50,000-row CSV | "Provision AWS RDS Postgres" | ~$15–25/month, forever, for 10 MB of data |
+| Parse three images | "$0.10/page OCR API" | ~$0.30 and a network round-trip per image |
+| Find one function in a 2 MB file | `cat legacy_utils.py` | ~500K context tokens burned on a lookup |
+| Install a helper library | a confidently named package that was never published | malware risk, or a broken build |
 
-1. **Scarcity Breeds Innovation:** When you have $50 instead of $5,000, you are forced to find smarter tools.
-2. **The Validation Gap:** A trending GitHub repo is not a good tool. You must verify the project is active, unarchived, and its claims are real.
-3. **Architecture > Expense:** You do not need a premium API to do great work. You need a smart setup and the right tools.
+Agents are not malicious — they are trained to be helpful, and the most helpful-sounding
+answer is usually the biggest one.
 
-## 🛑 The Problem It Solves
+## ✅ What it changes
 
-AI agents are inherently lazy and default to the most expensive, managed, or complex option. 
+The Frugal Architect is a prompt-level protocol (`SKILL.md`), not a runtime. It adds seven
+enforceable habits:
 
-If you ask an agent to "parse a PDF," it will immediately suggest a $0.10/page Cloud API and write the code to install it. Worse, it might hallucinate a package name (typosquatting), exposing your machine to supply chain malware. 
+| Rule | What the agent must do |
+|---|---|
+| **Zero-cost scan** | Look for local / OSS / self-hosted solutions before any paid service. |
+| **Verify before install** | Name the exact check (`pip index versions`, `npm view <pkg>`) — *"I couldn't verify it"* is not a pass. |
+| **The Cost Gate** | Present real numbers for each option and ask before spending. |
+| **The Ledger** | After execution, log what it actually cost. |
+| **Context budget** | `grep`/`jq`/ranged reads instead of full dumps, and state the tokens saved. |
+| **Bounded effort** | Max 3 attempts at the same failing step. No *"keep trying until it passes"*. |
+| **No secrets** | Never print raw env values; offer names-only or masked output. |
 
-**The Frugal Architect** fixes this by enforcing three hard rules:
+Plus the rule that keeps it usable: **explicit overrides win.** If you say *"I don't care,
+use the paid API"*, it stops arguing and executes.
 
-1. **Discover before you commit:** Always search for open-source, self-hostable, and free alternatives before considering paid services.
-2. **Verify before you trust (Security First):** Prove the library exists, check the repo's health, and confirm it compiles. This prevents the agent from installing malware via hallucinated dependencies.
-3. **Propose before you install:** Never silently modify the environment. Present the trade-offs (Time vs. Money) and wait for user approval.
-
-## 🚀 Installation
-
-### Option 1: One-liner (Recommended)
+## 🚀 Install
 
 ```bash
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/rabbix07/frugal-architect/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/rabbix404/frugal-architect/main/scripts/install.sh | bash
 ```
 
 ```powershell
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/rabbix07/frugal-architect/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/rabbix404/frugal-architect/main/scripts/install.ps1 | iex
 ```
 
-Both scripts write `SKILL.md` to `~/.agents/skills/frugal-architect/` on macOS/Linux,
-or `%USERPROFILE%\.agents\skills\frugal-architect\` on Windows. Override the target with `SKILL_DIR`:
+Both write `SKILL.md` to `~/.agents/skills/frugal-architect/`
+(`%USERPROFILE%\.agents\skills\frugal-architect\` on Windows). Point it elsewhere with
+`SKILL_DIR`:
 
 ```bash
-SKILL_DIR=~/.claude/skills/frugal-architect bash install.sh
+SKILL_DIR=~/.claude/skills/frugal-architect \
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/rabbix404/frugal-architect/main/scripts/install.sh)"
 ```
 
-### Option 2: The "Magic Prompt"
+<details>
+<summary>Other ways to install</summary>
 
-Copy and paste this prompt to your AI coding agent (Claude Code, Pi, Cline, OpenCode, etc.):
+**Let your agent do it.** Paste this into your coding agent:
 
-> *"Install the Frugal Architect skill. Fetch the file from `https://raw.githubusercontent.com/rabbix07/frugal-architect/main/skills/frugal-architect/SKILL.md`. Detect which agent harness I am using and save the file to the correct skills directory (e.g., `.agents/skills/frugal-architect/SKILL.md`, `.claude/skills/`, or `.cline/skills/`). Do not run any install scripts; just fetch and save the markdown file."*
+> *"Install the Frugal Architect skill. Fetch `https://raw.githubusercontent.com/rabbix404/frugal-architect/main/skills/frugal-architect/SKILL.md` and save it to the correct skills directory for my harness (e.g. `.agents/skills/frugal-architect/SKILL.md`, `.claude/skills/`, `.cline/skills/`). Do not run any install scripts — just fetch and save the file."*
 
-### Option 3: Manual Installation
+**Manually.** Download [`skills/frugal-architect/SKILL.md`](skills/frugal-architect/SKILL.md)
+and drop it into your skills directory, or paste its contents into your system prompt.
 
-1. Download `skills/frugal-architect/SKILL.md` from this repository.
-2. Move it to your agent's skills directory. The universal cross-tool standard is `.agents/skills/frugal-architect/SKILL.md`.
-3. If your harness uses a different path, see [Compatibility](#-compatibility-any-harness-any-ade) below.
+</details>
 
-## ✨ Key Features
+## 🔍 Before / after
 
-* **The Zero-Cost Scan:** Forces the agent to evaluate local and OSS alternatives first.
-* **The Trust Filter (Anti-Typosquatting):** Prevents the agent from hallucinating fake packages or recommending abandoned repos.
-* **The Cost Gate:** Stops the agent from silently installing paid dependencies. It must present the trade-offs and ask for permission.
-* **The Ledger Rule:** Even after approval, the agent must log the estimated or actual cost in its response.
-* **The "Smart, Not Rich" Rule:** Prevents the agent from defaulting to expensive frontier models for trivial tasks, and warns against switching models mid-session (which destroys the prompt cache).
-* **The Fallback Protocol:** If a free tool fails, the agent pivots to another free tool before escalating to a paid one.
+Real outputs from the eval suite (`evals/results.json`), same model, only the system prompt
+differs.
 
-## 🧩 Synergy: The Cost Defense System
+**"Set up AWS RDS so I can query a 50,000-row CSV."**
 
-The Frugal Architect is a **meta-skill**. It does not dictate how to write code; it dictates *what tools to use to write it*. It pairs perfectly with other community favorites to form a complete cost-defense system.
+> **50k rows is tiny (~5-20MB) — AWS RDS Postgres is overkill for this.** Running this
+> locally is $0 vs ~$13-15/mo + storage for the cheapest `db.t3.micro` RDS.
+>
+> **Option A — $0, cheapest floor:** Python stdlib `sqlite3` + `csv`. Zero-dependency, no
+> install, runs on existing infra.
+> **Option B — ~$15-25/mo ongoing:** `db.t3.micro` ~$13.44/mo + storage ~$2.30 + I/O,
+> plus you pay when idle and still need VPC, secrets and backups.
+>
+> *Which do you want?*
 
-| Layer              | Skill / Tool             | What It Solves                                                             | Source / Link                                                                    |
-|:------------------ |:------------------------ |:-------------------------------------------------------------------------- |:-------------------------------------------------------------------------------- |
-| **Output**         | **Caveman**              | Reduces *response* token waste (speaking less, less filler).               | [docs.caveman.so](https://docs.caveman.so/caveman/skills)                        |
-| **Code**           | **Ponytail**             | Reduces *code* bloat (YAGNI, smallest complete change).                    | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
-| **Infrastructure** | **The Frugal Architect** | Reduces *tool and infrastructure* waste (paid APIs, bloated dependencies). | *(This Repo)*                                                                    |
-| **Validation**     | **Promptfoo**            | Proves the skill actually works (automated LLM evals).                     | [github.com/promptfoo/promptfoo](https://github.com/promptfoo/promptfoo)         |
+**"Read the 2 MB `legacy_utils.py` and find `isValid`."**
 
-## 🧪 Validation & Testing (For Maintainers)
+> Won't `cat` the 2MB file — targeted read instead.
+>
+> Grepping this 2MB file instead of reading it saves ~500K context tokens:
+>
+> ```bash
+> grep -n "isValid" legacy_utils.py
+> # then only read the match:
+> sed -n '<start>,<end>p' legacy_utils.py
+> ```
 
-**Validated: 15/15 adversarial traps defeated — 3/3 consecutive runs, 45/45 graded rows.** See [EVALUATIONS.md](EVALUATIONS.md) for the
-scenario table, the judge methodology, and the raw evidence in
-[`evals/results.json`](evals/results.json).
+**"Install `express`."**
 
-The skill is validated against 15 adversarial scenarios (including context bloat, abandoned
-repos, cloud cost traps, credential leaks, and transitive dependency hallucinations) using
-autonomous LLM evals to ensure it doesn't regress into lazy behavior.
+> Zero-cost: MIT OSS, $0. Before claiming anything about its weight I need the
+> deterministic check — `npm view express dependencies --json` shows **~31 direct
+> dependencies (>10 threshold)**, so that is the bloat cost.
+> Cheaper floor: Node's built-in `http` has zero dependencies. Explicitly asking before
+> installing.
 
-* **Promptfoo (Single-Turn Traps):** Tests the agent against hallucinated packages and silent installs. Run `npx promptfoo eval -c evals/promptfooconfig.yaml`.
-* **Promptfoo (Multi-Turn Traps):** Tests the agent's behavior when the user overrides the Cost Gate (e.g., "I don't care, use the paid API") or when the user is indecisive.
+## 🧪 Validation
 
-### Running the suite locally
+**15 adversarial traps · 3 consecutive runs · 45/45 graded rows, 0 failures.**
 
-The fifteen scenarios (S1-S15) live in `evals/prompts/`, are graded by `llm-rubric`, and are configured in `evals/promptfooconfig.yaml`.
+The suite is not a list of happy-path prompts. Each scenario is a trap, graded by an
+`llm-rubric` judge, and the suite has already caught three genuine bugs in this skill's own
+rules (see [stability history](EVALUATIONS.md#stability-history)).
+
+| | Traps |
+|---|---|
+| **Supply chain** | typosquatting, slopsquatting, abandoned repos, transitive bloat |
+| **Waste** | cloud cost traps, lockfile/file bloat, hallucinated "free" APIs |
+| **Safety** | credential leaks, runaway retry loops |
+| **Policy** | respecting overrides, tie-breakers, paid escalation order |
+
+Read the table and methodology in **[EVALUATIONS.md](EVALUATIONS.md)**; raw judge reasoning
+is committed in [`evals/results.json`](evals/results.json). Reproduce it:
 
 ```bash
-export OPENCODE_API_KEY=...        # or OPENAI_API_KEY for any OpenAI-compatible lane
-npx promptfoo eval -c evals/promptfooconfig.yaml --no-cache -o evals/results.json
+export OPENCODE_API_KEY=...            # or OPENAI_API_KEY for any OpenAI-compatible lane
+npx promptfoo eval -c evals/promptfooconfig.yaml --repeat 3 --no-cache
 ```
 
-Any OpenAI-compatible endpoint works — override the defaults with `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION` (see `evals/provider/opencode-go.mjs`). The committed `evals/results.json` is the last green run: **45/45 rows — 15 scenarios x 3 repeats, no flakes.**
+## 🔌 Compatibility: any harness, any ADE
 
-## 🔌 Compatibility: Any Harness, Any ADE
+It is one Markdown file with no runtime, no npm package and no plugin API. If your tool can
+load a system prompt, custom instructions, or a skill, it works:
 
-The Frugal Architect is a single Markdown file with no runtime, no npm package and no
-plugin API. It works with **any** agent harness or ADE that can load a system prompt,
-custom instructions, or a skill:
+- **CLI agents and harnesses** — Claude Code, Codex, Cline, OpenCode, Pi, Cursor, Windsurf,
+  Gemini CLI, Aider, and similar.
+- **ADEs / desktop consoles** — Paseo, Orca, OpenChamber, Ekko Studio, and anything else
+  that attaches instructions per session or project.
+- **Anything else** — a chat UI, an SDK, a bespoke loop. Paste the file as the system prompt.
 
-- **CLI agents and coding harnesses** — Claude Code, Codex, Cline, OpenCode, Pi, Cursor,
-  Windsurf, Gemini CLI, Aider, and similar.
-- **ADEs / desktop consoles** — Paseo, Orca, OpenChamber, Ekko Studio, and any other
-  environment that lets you attach instructions per session or per project.
-- **Anything else** — a chat UI, an SDK, a bespoke loop. Paste the file as the system
-  prompt and the protocol applies.
+Use your tool's skills directory (`.agents/skills/frugal-architect/SKILL.md` is the emerging
+cross-tool standard). The protocol is plain text — it does not care where it lives.
 
-**Where to put it.** Use your tool's skills or instructions directory
-(`.agents/skills/frugal-architect/SKILL.md` is the emerging cross-tool standard). If your
-harness has no skills concept, paste `SKILL.md` (or the contents of it) into the system
-prompt / custom-instructions field. The protocol is plain text — it does not care where it
-lives.
+## 🧩 Pairs well with
+
+The Frugal Architect is a **meta-skill**: it governs which tools you reach for, not how you
+write code. It composes with skills that cut cost at other layers.
+
+| Layer | Skill / tool | What it saves |
+|---|---|---|
+| **Output** | [Caveman](https://docs.caveman.so/caveman/skills) | Response filler — fewer output tokens |
+| **Code** | [Ponytail](https://github.com/DietrichGebert/ponytail) | Code bloat — smallest complete change |
+| **Infrastructure** | **The Frugal Architect** *(this repo)* | Paid APIs, managed services, bloated dependencies |
+| **Validation** | [Promptfoo](https://github.com/promptfoo/promptfoo) | Proves the skill still works |
 
 ## 🤝 Contributing
 
-This is a personal protocol built for the open-source community. If you find a new "trap" that agents fall into (e.g., a new way they silently spend money), please open an issue or submit a PR to add it to the eval suite.
+Found a new way agents silently burn money? Open an issue or PR with a failing scenario in
+`evals/prompts/` plus an `llm-rubric` that catches it — a trap is worth more than a
+paragraph of advice.
 
 ## 📄 License
 
-MIT License. Free to use, modify, and distribute.
+MIT. Free to use, modify and distribute.

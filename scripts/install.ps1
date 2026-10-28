@@ -1,10 +1,10 @@
 # Frugal Architect skill installer (Windows)
-# Usage: irm https://raw.githubusercontent.com/rabbix07/frugal-architect/main/install.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/rabbix404/frugal-architect/main/scripts/install.ps1 | iex
 # Override target: $env:SKILL_DIR = "C:\custom\path"; irm ... | iex
 $ErrorActionPreference = "Stop"
 
 $SkillName = "frugal-architect"
-$Repo      = "rabbix07/frugal-architect"
+$Repo      = "rabbix404/frugal-architect"
 $Branch    = if ($env:BRANCH) { $env:BRANCH } else { "main" }
 $SkillUrl  = "https://raw.githubusercontent.com/$Repo/$Branch/skills/$SkillName/SKILL.md"
 $SkillDir  = if ($env:SKILL_DIR) { $env:SKILL_DIR } else { Join-Path $HOME ".agents\skills\$SkillName" }

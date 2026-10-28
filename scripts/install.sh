@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Frugal Architect skill installer (macOS / Linux)
-# Usage: curl -fsSL https://raw.githubusercontent.com/rabbix07/frugal-architect/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/rabbix404/frugal-architect/main/scripts/install.sh | bash
 # Override target: SKILL_DIR=/custom/path bash install.sh
 set -euo pipefail
 
 SKILL_NAME="frugal-architect"
-REPO="rabbix07/frugal-architect"
+REPO="rabbix404/frugal-architect"
 BRANCH="${BRANCH:-main}"
 SKILL_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}/skills/${SKILL_NAME}/SKILL.md"
 SKILL_DIR="${SKILL_DIR:-$HOME/.agents/skills/$SKILL_NAME}"
