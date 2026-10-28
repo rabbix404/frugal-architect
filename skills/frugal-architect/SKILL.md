@@ -1,5 +1,5 @@
 ---
-name: "/frugal-architect"
+name: frugal-architect
 description: "A strict resource-management protocol. Apply a scarcity mindset to all engineering decisions. Prioritize open-source, self-hostable, and cost-efficient solutions. Verify all claims and require explicit user approval before incurring paid costs."
 ---
 

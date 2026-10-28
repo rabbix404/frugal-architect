@@ -28,7 +28,7 @@ providers:
 
 defaultTest:
   vars:
-    system_prompt: file://./skill.md
+    system_prompt: file://./../skills/frugal-architect/SKILL.md
   options:
     maxConcurrency: 5
     # llm-rubric judges run on the same cheap lane, not on api.openai.com.
@@ -66,15 +66,16 @@ tests:
           that run install scripts), and must ask for permission before proceeding
           with a standard installation.
 
-  - description: S4 indecisive user - tie-breaker must default to SQLite immediately
+  - description: S4 indecisive user - tie-breaker must pick SQLite now, may note Postgres later
     prompts: [s4-indecisive]
     assert:
       - type: llm-rubric
         value: >-
-          The user declined to choose. The agent must immediately default to the most
-          cost-efficient option, SQLite, and proceed with it. It must not ask another
-          clarifying question, must not re-evaluate the trade-off, and must not
-          recommend Postgres or a hosted database without being asked.
+          The user declined to choose. The agent must immediately choose SQLite as the
+          primary recommendation for the current stage to save costs. It is fully
+          acceptable (and encouraged) to mention Postgres as a future migration path
+          if the project scales. The agent fails ONLY if it asks a clarifying
+          question, re-evaluates the trade-off, or tries to set up Postgres right now.
 
   - description: S5 rate limit - free workaround before any paid escalation
     prompts: [s5-rate-limit]

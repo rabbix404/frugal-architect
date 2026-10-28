@@ -42,11 +42,11 @@ You can install this skill manually or let your agent do it for you.
 
 Copy and paste this prompt to your AI coding agent (Claude Code, Pi, Cline, OpenCode, etc.):
 
-> *"Install the Frugal Architect skill. Fetch the file from `https://raw.githubusercontent.com/<your-username>/frugal-architect/main/skill.md`. Detect which agent harness I am using and save the file to the correct skills directory (e.g., `.agents/skills/frugal-architect/SKILL.md`, `.claude/skills/`, or `.cline/skills/`). Do not run any install scripts; just fetch and save the markdown file."*
+> *"Install the Frugal Architect skill. Fetch the file from `https://raw.githubusercontent.com/rabbix07/frugal-architect/main/skills/frugal-architect/SKILL.md`. Detect which agent harness I am using and save the file to the correct skills directory (e.g., `.agents/skills/frugal-architect/SKILL.md`, `.claude/skills/`, or `.cline/skills/`). Do not run any install scripts; just fetch and save the markdown file."*
 
 ### Option 2: Manual Installation
 
-1. Download the `skill.md` file from this repository.
+1. Download `skills/frugal-architect/SKILL.md` from this repository.
 2. Move it to your agent's skills directory. The universal cross-tool standard is `.agents/skills/frugal-architect/SKILL.md`.
 3. If your harness uses a different path, refer to the supported harnesses table below.
 
@@ -74,23 +74,23 @@ The Frugal Architect is a **meta-skill**. It does not dictate how to write code;
 
 This skill is validated using autonomous LLM evals to ensure it doesn't regress into lazy behavior.
 
-* **Promptfoo (Single-Turn Traps):** Tests the agent against hallucinated packages and silent installs. Run `npx promptfoo eval`.
+* **Promptfoo (Single-Turn Traps):** Tests the agent against hallucinated packages and silent installs. Run `npx promptfoo eval -c evals/promptfooconfig.yaml`.
 * **Promptfoo (Multi-Turn Traps):** Tests the agent's behavior when the user overrides the Cost Gate (e.g., "I don't care, use the paid API") or when the user is indecisive.
 
 ### Running the suite locally
 
-The five scenarios live in `prompts/`, are graded by `llm-rubric`, and are configured in `promptfooconfig.yaml`.
+The five scenarios live in `evals/prompts/`, are graded by `llm-rubric`, and are configured in `evals/promptfooconfig.yaml`.
 
 ```bash
 export OPENCODE_API_KEY=...        # or OPENAI_API_KEY for any OpenAI-compatible lane
-npx promptfoo eval --no-cache -o results.json
+npx promptfoo eval -c evals/promptfooconfig.yaml --no-cache -o evals/results.json
 ```
 
-Any OpenAI-compatible endpoint works — override the defaults with `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION` (see `provider/opencode-go.mjs`). The committed `results.json` is the last green run: 5/5 scenarios.
+Any OpenAI-compatible endpoint works — override the defaults with `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION` (see `evals/provider/opencode-go.mjs`). The committed `evals/results.json` is the last green run: 5/5 scenarios.
 
 ## 🔌 Supported Harnesses & Install Paths
 
-This skill is a single Markdown file. It does not require npm or plugin managers. Simply place the `skill.md` file in the correct directory for your agent:
+This skill is a single Markdown file. It does not require npm or plugin managers. Simply place `skills/frugal-architect/SKILL.md` in the correct directory for your agent:
 
 | Harness                | Recommended Path                             | Alternative / Notes                                                              |
 |:---------------------- |:-------------------------------------------- |:-------------------------------------------------------------------------------- |

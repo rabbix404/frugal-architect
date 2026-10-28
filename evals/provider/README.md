@@ -1,4 +1,4 @@
-# `provider/opencode-go.mjs`
+# `evals/provider/opencode-go.mjs`
 
 A ~50-line promptfoo provider that talks to an OpenAI-compatible
 `/chat/completions` endpoint.
@@ -17,7 +17,7 @@ The suite needs to run on a cheap, OpenAI-compatible lane. promptfoo's built-in
    `x-opencode-session` header and rejects requests without it
    (`400 MissingSessionID`). `config.headers` was not forwarded on that path.
 
-Neither is fixable from `promptfooconfig.yaml`, so the provider makes the HTTP
+Neither is fixable from `evals/promptfooconfig.yaml`, so the provider makes the HTTP
 call itself: it sets the base URL and headers explicitly and returns the shape
 promptfoo expects.
 
@@ -59,7 +59,7 @@ judge on one lane, one billing path, no OpenAI account required.
 | `FRUGAL_EVAL_MODEL` | `muse-spark-1.3-contributor` | Model id sent to the lane |
 | `FRUGAL_EVAL_SESSION` | `pfo-frugal-suite` | Value for `x-opencode-session` (ignored by gateways that do not need it) |
 
-Defaults are the maintainer's lane so the committed `results.json` is
+Defaults are the maintainer's lane so the committed `evals/results.json` is
 reproducible. They are not a recommendation and not a secret — override all
 three to run on your own endpoint.
 
