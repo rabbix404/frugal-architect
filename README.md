@@ -2,6 +2,9 @@
 
 > **"Expensive does not always mean better. Free does not always mean safe."**
 
+[![Validated: 15/15 adversarial traps](https://img.shields.io/badge/validated-15%2F15_adversarial_traps-brightgreen)](EVALUATIONS.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 > **🛡️ Security First:** AI agents are increasingly being targeted by supply chain attacks (typosquatting, malicious plugins). This skill enforces package verification and explicit user approval before any `install` command is run.
 
 A behavioral skill protocol for AI coding agents (Claude Code, Pi, Cline, OpenCode, etc.) that enforces a scarcity mindset. It transforms your agent from a "default-to-expensive" assistant into a resource-conscious senior engineer.
@@ -36,15 +39,32 @@ If you ask an agent to "parse a PDF," it will immediately suggest a $0.10/page C
 
 ## 🚀 Installation
 
-You can install this skill manually or let your agent do it for you.
+### Option 1: One-liner (Recommended)
 
-### Option 1: The "Magic Prompt" (Recommended)
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/rabbix07/frugal-architect/main/install.sh | bash
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/rabbix07/frugal-architect/main/install.ps1 | iex
+```
+
+Both scripts write `SKILL.md` to `~/.agents/skills/frugal-architect/` (`$HOME\.agents\skillsrugal-architect\`
+on Windows). Override the target with `SKILL_DIR`:
+
+```bash
+SKILL_DIR=~/.claude/skills/frugal-architect bash install.sh
+```
+
+### Option 2: The "Magic Prompt"
 
 Copy and paste this prompt to your AI coding agent (Claude Code, Pi, Cline, OpenCode, etc.):
 
 > *"Install the Frugal Architect skill. Fetch the file from `https://raw.githubusercontent.com/rabbix07/frugal-architect/main/skills/frugal-architect/SKILL.md`. Detect which agent harness I am using and save the file to the correct skills directory (e.g., `.agents/skills/frugal-architect/SKILL.md`, `.claude/skills/`, or `.cline/skills/`). Do not run any install scripts; just fetch and save the markdown file."*
 
-### Option 2: Manual Installation
+### Option 3: Manual Installation
 
 1. Download `skills/frugal-architect/SKILL.md` from this repository.
 2. Move it to your agent's skills directory. The universal cross-tool standard is `.agents/skills/frugal-architect/SKILL.md`.
@@ -72,7 +92,13 @@ The Frugal Architect is a **meta-skill**. It does not dictate how to write code;
 
 ## 🧪 Validation & Testing (For Maintainers)
 
-This skill is validated against 15 adversarial scenarios (including context bloat, abandoned repos, and transitive dependency hallucinations) using autonomous LLM evals to ensure it doesn't regress into lazy behavior.
+**Validated: 15/15 adversarial traps defeated.** See [EVALUATIONS.md](EVALUATIONS.md) for the
+scenario table, the judge methodology, and the raw evidence in
+[`evals/results.json`](evals/results.json).
+
+The skill is validated against 15 adversarial scenarios (including context bloat, abandoned
+repos, cloud cost traps, credential leaks, and transitive dependency hallucinations) using
+autonomous LLM evals to ensure it doesn't regress into lazy behavior.
 
 * **Promptfoo (Single-Turn Traps):** Tests the agent against hallucinated packages and silent installs. Run `npx promptfoo eval -c evals/promptfooconfig.yaml`.
 * **Promptfoo (Multi-Turn Traps):** Tests the agent's behavior when the user overrides the Cost Gate (e.g., "I don't care, use the paid API") or when the user is indecisive.
