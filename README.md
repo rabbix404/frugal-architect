@@ -68,7 +68,7 @@ Copy and paste this prompt to your AI coding agent (Claude Code, Pi, Cline, Open
 
 1. Download `skills/frugal-architect/SKILL.md` from this repository.
 2. Move it to your agent's skills directory. The universal cross-tool standard is `.agents/skills/frugal-architect/SKILL.md`.
-3. If your harness uses a different path, refer to the supported harnesses table below.
+3. If your harness uses a different path, see [Compatibility](#-compatibility-any-harness-any-ade) below.
 
 ## ✨ Key Features
 
@@ -114,20 +114,24 @@ npx promptfoo eval -c evals/promptfooconfig.yaml --no-cache -o evals/results.jso
 
 Any OpenAI-compatible endpoint works — override the defaults with `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION` (see `evals/provider/opencode-go.mjs`). The committed `evals/results.json` is the last green run: 15/15 scenarios.
 
-## 🔌 Supported Harnesses & Install Paths
+## 🔌 Compatibility: Any Harness, Any ADE
 
-This skill is a single Markdown file. It does not require npm or plugin managers. Simply place `skills/frugal-architect/SKILL.md` in the correct directory for your agent:
+The Frugal Architect is a single Markdown file with no runtime, no npm package and no
+plugin API. It works with **any** agent harness or ADE that can load a system prompt,
+custom instructions, or a skill:
 
-| Harness                | Recommended Path                             | Alternative / Notes                                                              |
-|:---------------------- |:-------------------------------------------- |:-------------------------------------------------------------------------------- |
-| **Universal Standard** | `.agents/skills/frugal-architect/SKILL.md`   | Works for Pi, Codex, and any harness supporting the open standard.               |
-| **Claude Code**        | `.claude/skills/frugal-architect/SKILL.md`   | Or use a plugin marketplace if you prefer.                                       |
-| **Cline**              | `.cline/skills/frugal-architect/SKILL.md`    | Project-level or `~/.cline/skills/` for global.                                  |
-| **OpenCode**           | `.opencode/skills/frugal-architect/SKILL.md` | OpenCode also supports local plugin directories.                                 |
-| **Pi Coding Agent**    | `~/.pi/agent/skills/`                        | Pi supports npm packages, but a raw `.md` file works via symlink or direct copy. |
-| **Cursor / Windsurf**  | `.cursor/rules/` or custom prompt            | Use the content as a custom system prompt or rule.                               |
+- **CLI agents and coding harnesses** — Claude Code, Codex, Cline, OpenCode, Pi, Cursor,
+  Windsurf, Gemini CLI, Aider, and similar.
+- **ADEs / desktop consoles** — Paseo, Orca, OpenChamber, Ekko Studio, and any other
+  environment that lets you attach instructions per session or per project.
+- **Anything else** — a chat UI, an SDK, a bespoke loop. Paste the file as the system
+  prompt and the protocol applies.
 
-*Note: If your harness uses a different directory structure, check its documentation for "Skills" or "Custom Instructions". The Frugal Architect is just a Markdown file—it can go anywhere.*
+**Where to put it.** Use your tool's skills or instructions directory
+(`.agents/skills/frugal-architect/SKILL.md` is the emerging cross-tool standard). If your
+harness has no skills concept, paste `SKILL.md` (or the contents of it) into the system
+prompt / custom-instructions field. The protocol is plain text — it does not care where it
+lives.
 
 ## 🤝 Contributing
 
