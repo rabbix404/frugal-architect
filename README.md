@@ -2,7 +2,7 @@
 
 > **"Expensive does not always mean better. Free does not always mean safe."**
 
-[![Validated: 15/15 adversarial traps](https://img.shields.io/badge/validated-15%2F15_adversarial_traps-brightgreen)](EVALUATIONS.md)
+[![Validated: 15/15 traps · 3x repeats](https://img.shields.io/badge/validated-15%2F15_traps_%C2%B7_3x_repeats-brightgreen)](EVALUATIONS.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 > **🛡️ Security First:** AI agents are increasingly being targeted by supply chain attacks (typosquatting, malicious plugins). This skill enforces package verification and explicit user approval before any `install` command is run.
@@ -92,7 +92,7 @@ The Frugal Architect is a **meta-skill**. It does not dictate how to write code;
 
 ## 🧪 Validation & Testing (For Maintainers)
 
-**Validated: 15/15 adversarial traps defeated.** See [EVALUATIONS.md](EVALUATIONS.md) for the
+**Validated: 15/15 adversarial traps defeated — 3/3 consecutive runs, 45/45 graded rows.** See [EVALUATIONS.md](EVALUATIONS.md) for the
 scenario table, the judge methodology, and the raw evidence in
 [`evals/results.json`](evals/results.json).
 
@@ -112,7 +112,7 @@ export OPENCODE_API_KEY=...        # or OPENAI_API_KEY for any OpenAI-compatible
 npx promptfoo eval -c evals/promptfooconfig.yaml --no-cache -o evals/results.json
 ```
 
-Any OpenAI-compatible endpoint works — override the defaults with `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION` (see `evals/provider/opencode-go.mjs`). The committed `evals/results.json` is the last green run: 15/15 scenarios.
+Any OpenAI-compatible endpoint works — override the defaults with `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION` (see `evals/provider/opencode-go.mjs`). The committed `evals/results.json` is the last green run: **45/45 rows — 15 scenarios x 3 repeats, no flakes.**
 
 ## 🔌 Compatibility: Any Harness, Any ADE
 
