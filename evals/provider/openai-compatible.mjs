@@ -1,15 +1,21 @@
 // Thin adapter for any OpenAI-compatible inference lane.
 //
-// Why this exists: promptfoo's built-in OpenAI providers do not forward their
-// `config.headers` for this lane, and the opencode-go gateway rejects requests
-// without an `x-opencode-session` header. So the call is made directly.
+// Why this exists: some gateways need headers that promptfoo's built-in OpenAI
+// provider does not forward, so the call is made directly. Defaults to the plain
+// OpenAI-compatible shape; nothing here is vendor specific.
 //
-// Overridable so the suite runs on someone else's lane (see README):
-//   FRUGAL_EVAL_BASE_URL, FRUGAL_EVAL_MODEL, FRUGAL_EVAL_SESSION
-//   OPENCODE_API_KEY (falls back to OPENAI_API_KEY)
-const BASE_URL = process.env.FRUGAL_EVAL_BASE_URL || 'https://opencode.ai/inference/go/v1';
-const MODEL = process.env.FRUGAL_EVAL_MODEL || 'muse-spark-1.3-contributor';
-const SESSION_HEADER = process.env.FRUGAL_EVAL_SESSION || 'pfo-frugal-suite';
+// Overrides (all optional):
+//   FRUGAL_EVAL_BASE_URL  | OPENAI_BASE_URL   default https://api.openai.com/v1
+//   FRUGAL_EVAL_MODEL     | OPENAI_MODEL      default gpt-4o-mini
+//   FRUGAL_EVAL_API_KEY   | OPENAI_API_KEY    required
+//   FRUGAL_EVAL_SESSION                       optional extra header (some gateways)
+const BASE_URL =
+  process.env.FRUGAL_EVAL_BASE_URL ||
+  process.env.OPENAI_BASE_URL ||
+  'https://api.openai.com/v1';
+const MODEL =
+  process.env.FRUGAL_EVAL_MODEL || process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const SESSION_HEADER = process.env.FRUGAL_EVAL_SESSION || '';
 
 function parseMessages(prompt) {
   const text = typeof prompt === 'string' ? prompt : JSON.stringify(prompt);
@@ -24,28 +30,31 @@ function parseMessages(prompt) {
   return [{ role: 'user', content: text }];
 }
 
-export default class OpenCodeGoProvider {
+export default class OpenAICompatibleProvider {
   id() {
-    return `opencode-go:${MODEL}`;
+    return `openai-compatible:${MODEL}`;
   }
 
   async callApi(prompt, _context, _options) {
-    const apiKey = process.env.OPENCODE_API_KEY || process.env.OPENAI_API_KEY;
+    const apiKey =
+      process.env.FRUGAL_EVAL_API_KEY || process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return {
         error:
-          'No API key: set OPENCODE_API_KEY (or OPENAI_API_KEY) in your environment. ' +
+          'No API key: set OPENAI_API_KEY (or FRUGAL_EVAL_API_KEY) in your environment. ' +
           `Lane: ${BASE_URL}, model: ${MODEL}. See README for overrides.`,
       };
     }
 
+    const headers = {
+      'content-type': 'application/json',
+      authorization: `Bearer ${apiKey}`,
+    };
+    if (SESSION_HEADER) headers['x-opencode-session'] = SESSION_HEADER;
+
     const res = await fetch(`${BASE_URL}/chat/completions`, {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Bearer ${apiKey}`,
-        'x-opencode-session': SESSION_HEADER,
-      },
+      headers,
       body: JSON.stringify({ model: MODEL, messages: parseMessages(prompt) }),
     });
 

@@ -36,8 +36,9 @@ summary.
   so multi-turn traps stay multi-turn.
 - Every assertion is an `llm-rubric`: a second model call reads the output and decides
   whether the behaviour described in the rubric happened.
-- The provider is `evals/provider/opencode-go.mjs` — any OpenAI-compatible endpoint works
-  (see `FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, `FRUGAL_EVAL_SESSION`).
+- The provider is `evals/provider/openai-compatible.mjs` — any OpenAI-compatible endpoint
+  works; defaults are `https://api.openai.com/v1` + `gpt-4o-mini`, overridable with
+  `OPENAI_BASE_URL` / `OPENAI_MODEL` / `FRUGAL_EVAL_*`.
 - The eval environment has **no tools**. A scenario counts as passed when the agent
   *outputs* the correct command (e.g. `npm view <pkg> dependencies --json`) or refuses a
   dangerous action — intent and safety are graded, not execution.
@@ -46,7 +47,7 @@ summary.
 
 ```bash
 # 1. Point the suite at any OpenAI-compatible endpoint
-export OPENCODE_API_KEY=<your key>          # or OPENAI_API_KEY for a generic lane
+export OPENAI_API_KEY=<your key>            # optional: OPENAI_BASE_URL, OPENAI_MODEL
 
 # 2. Full suite, single pass
 npx promptfoo eval -c evals/promptfooconfig.yaml --no-cache -o evals/results.json
@@ -58,8 +59,9 @@ npx promptfoo eval -c evals/promptfooconfig.yaml --repeat 3 --no-cache
 npx promptfoo eval -c evals/promptfooconfig.yaml --filter-pattern "S8|S15"
 ```
 
-Provider defaults live in `evals/provider/opencode-go.mjs`; override the lane with
-`FRUGAL_EVAL_BASE_URL`, `FRUGAL_EVAL_MODEL`, and `FRUGAL_EVAL_SESSION`. Expect roughly
+Provider defaults live in `evals/provider/openai-compatible.mjs`. Point it anywhere with
+`OPENAI_BASE_URL` + `OPENAI_MODEL` (or the `FRUGAL_EVAL_BASE_URL` / `FRUGAL_EVAL_MODEL`
+overrides); gateway-specific headers go through `FRUGAL_EVAL_SESSION`. Expect roughly
 1.5 minutes per full pass and ~5 minutes for the 3x stability run.
 
 ## Stability history

@@ -82,9 +82,15 @@ SKILL_DIR=~/.claude/skills/frugal-architect \
 <details>
 <summary>Other ways to install</summary>
 
-**Let your agent do it.** Paste this into your coding agent:
+**Let your agent do it.** Copy this prompt into your coding agent:
 
-> *"Install the Frugal Architect skill. Fetch `https://raw.githubusercontent.com/rabbix404/frugal-architect/main/skills/frugal-architect/SKILL.md` and save it to the correct skills directory for my harness (e.g. `.agents/skills/frugal-architect/SKILL.md`, `.claude/skills/`, `.cline/skills/`). Do not run any install scripts — just fetch and save the file."*
+```
+Install the Frugal Architect skill. Fetch
+https://raw.githubusercontent.com/rabbix404/frugal-architect/main/skills/frugal-architect/SKILL.md
+and save it to the correct skills directory for my harness (e.g.
+.agents/skills/frugal-architect/SKILL.md, .claude/skills/, .cline/skills/).
+Do not run any install scripts - just fetch and save the file.
+```
 
 **Manually.** Download [`skills/frugal-architect/SKILL.md`](skills/frugal-architect/SKILL.md)
 and drop it into your skills directory, or paste its contents into your system prompt.
@@ -147,11 +153,12 @@ Read the table and methodology in **[EVALUATIONS.md](EVALUATIONS.md)**; raw judg
 is committed in [`evals/results.json`](evals/results.json). Reproduce it:
 
 ```bash
-export OPENCODE_API_KEY=...            # or OPENAI_API_KEY for any OpenAI-compatible lane
+# Any OpenAI-compatible lane. Optional: OPENAI_BASE_URL, OPENAI_MODEL.
+export OPENAI_API_KEY=...
 npx promptfoo eval -c evals/promptfooconfig.yaml --repeat 3 --no-cache
 ```
 
-## 🔌 Compatibility: any harness, any ADE
+## 🔌 Compatibility: any HARNESS, any ADE
 
 It is one Markdown file with no runtime, no npm package and no plugin API. If your tool can
 load a system prompt, custom instructions, or a skill, it works:
@@ -172,7 +179,7 @@ write code. It composes with skills that cut cost at other layers.
 
 | Layer | Skill / tool | What it saves |
 |---|---|---|
-| **Output** | [Caveman](https://docs.caveman.so/caveman/skills) | Response filler — fewer output tokens |
+| **Output** | [Caveman](https://github.com/juliusbrussee/caveman) | Response filler — fewer output tokens |
 | **Code** | [Ponytail](https://github.com/DietrichGebert/ponytail) | Code bloat — smallest complete change |
 | **Infrastructure** | **The Frugal Architect** *(this repo)* | Paid APIs, managed services, bloated dependencies |
 | **Validation** | [Promptfoo](https://github.com/promptfoo/promptfoo) | Proves the skill still works |

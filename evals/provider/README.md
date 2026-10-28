@@ -1,21 +1,20 @@
-# `evals/provider/opencode-go.mjs`
+# `evals/provider/openai-compatible.mjs`
 
-A ~50-line promptfoo provider that talks to an OpenAI-compatible
-`/chat/completions` endpoint.
+A ~50-line promptfoo provider that talks to any OpenAI-compatible
+`/chat/completions` endpoint. Plain OpenAI is the default; the notes below
+explain why a hand-rolled adapter exists instead of promptfoo's built-in one.
 
 ## Why this file exists
 
 The suite needs to run on a cheap, OpenAI-compatible lane. promptfoo's built-in
 `openai:*` providers were not usable for it, for two independent reasons:
 
-1. **Base URL was ignored.** With the provider id used by this suite,
-   `config.apiBaseUrl` was dropped and requests went to `api.openai.com`,
-   returning `401 Incorrect API key`. Setting `OPENAI_BASE_URL` fixes the
-   routing but is process-global, so it leaks into every other provider in the
-   same run.
-2. **Custom headers were dropped.** The gateway requires an
-   `x-opencode-session` header and rejects requests without it
-   (`400 MissingSessionID`). `config.headers` was not forwarded on that path.
+1. **Base URL was ignored.** `config.apiBaseUrl` was dropped and requests went
+   to `api.openai.com`, returning `401 Incorrect API key`. Setting
+   `OPENAI_BASE_URL` fixes routing but is process-global.
+2. **Custom headers were dropped.** Some gateways require an extra session
+   header and reject requests without it. `config.headers` was not forwarded on
+   that path, so the provider sends it itself when `FRUGAL_EVAL_SESSION` is set.
 
 Neither is fixable from `evals/promptfooconfig.yaml`, so the provider makes the HTTP
 call itself: it sets the base URL and headers explicitly and returns the shape
@@ -37,12 +36,12 @@ promptfoo expects.
 
 ```yaml
 providers:
-  - id: file://./provider/opencode-go.mjs
+  - id: file://./provider/openai-compatible.mjs
     label: muse-spark-1.3-contributor
 
 defaultTest:
   options:
-    provider: file://./provider/opencode-go.mjs
+    provider: file://./provider/openai-compatible.mjs
 ```
 
 The second reference is not optional: `llm-rubric` defaults its judge to
@@ -54,10 +53,12 @@ judge on one lane, one billing path, no OpenAI account required.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `OPENCODE_API_KEY` | — | Lane credential (falls back to `OPENAI_API_KEY`) |
-| `FRUGAL_EVAL_BASE_URL` | `https://opencode.ai/inference/go/v1` | Any OpenAI-compatible base URL |
+| `OPENAI_API_KEY` | — | Credential (or `FRUGAL_EVAL_API_KEY`) |
+| `OPENAI_BASE_URL` | `https://api.openai.com/v1` | Endpoint base URL (or `FRUGAL_EVAL_BASE_URL`) |
+| `OPENAI_BASE_URL` | `https://api.openai.com/v1` | Any OpenAI-compatible base URL (or `FRUGAL_EVAL_BASE_URL`) |
+| `FRUGAL_EVAL_BASE_URL` | — | Same, wins over `OPENAI_BASE_URL` |
 | `FRUGAL_EVAL_MODEL` | `muse-spark-1.3-contributor` | Model id sent to the lane |
-| `FRUGAL_EVAL_SESSION` | `pfo-frugal-suite` | Value for `x-opencode-session` (ignored by gateways that do not need it) |
+| `FRUGAL_EVAL_SESSION` | — (unset) | If set, sent as the `x-opencode-session` header for gateways that require one |
 
 Defaults are the maintainer's lane so the committed `evals/results.json` is
 reproducible. They are not a recommendation and not a secret — override all
