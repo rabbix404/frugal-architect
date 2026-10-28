@@ -51,8 +51,8 @@ curl -fsSL https://raw.githubusercontent.com/rabbix07/frugal-architect/main/inst
 irm https://raw.githubusercontent.com/rabbix07/frugal-architect/main/install.ps1 | iex
 ```
 
-Both scripts write `SKILL.md` to `~/.agents/skills/frugal-architect/` (`$HOME\.agents\skillsrugal-architect\`
-on Windows). Override the target with `SKILL_DIR`:
+Both scripts write `SKILL.md` to `~/.agents/skills/frugal-architect/` on macOS/Linux,
+or `%USERPROFILE%\.agents\skills\frugal-architect\` on Windows. Override the target with `SKILL_DIR`:
 
 ```bash
 SKILL_DIR=~/.claude/skills/frugal-architect bash install.sh
